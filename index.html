@@ -125,6 +125,11 @@
 
     /* trustpilot */
     .tp-row { display: flex; align-items: flex-end; gap: 4px; justify-content: center; width: 100%; }
+    @media (min-width: 360px) {
+      /* Expand tp-row to full hero width so text fits on one line */
+      .tp-row { width: calc(100% + 48px); margin-left: -24px; margin-right: -24px; }
+      .tp-text { white-space: nowrap; }
+    }
     .tp-star { width: 21px; height: 20px; object-fit: contain; }
     .tp-text {
       font-family: var(--font-hauss);
