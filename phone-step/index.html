@@ -59,11 +59,16 @@
       box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.1);
       position: relative;
     }
-    .phone-inner {
+    .slide-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .slide-inner {
+      position: absolute;
+      inset: 0;
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-height: 100%;
       animation: slideInFromRight 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
     }
 
@@ -442,7 +447,6 @@
 <body>
 
   <div class="phone">
-  <div class="phone-inner">
 
     <!-- STATUS BAR -->
     <div class="status-bar">
@@ -494,6 +498,10 @@
         <div class="progress__fill"></div>
       </div>
     </div>
+
+    <!-- SLIDING AREA: only content + footer animate -->
+    <div class="slide-container">
+    <div class="slide-inner">
 
     <!-- MAIN CONTENT -->
     <div class="content">
@@ -577,7 +585,9 @@
       </div>
     </div>
 
-  </div><!-- /phone-inner -->
+    </div><!-- /slide-inner -->
+    </div><!-- /slide-container -->
+
   </div><!-- /phone -->
 
   <script>
