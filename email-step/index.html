@@ -698,6 +698,9 @@
       });
     }
 
+    // Auto-focus input on load so keyboard appears immediately
+    setTimeout(() => emailInput.focus(), 100);
+
     const inputWrapper = document.getElementById('inputWrapper');
     const hintText = document.getElementById('hintText');
 
