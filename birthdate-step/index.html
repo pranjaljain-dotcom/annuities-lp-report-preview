@@ -41,8 +41,9 @@
 
     .content { flex: 1; display: flex; flex-direction: column; padding: 36px 16px 112px; }
     .question-and-input { display: flex; flex-direction: column; gap: 36px; }
+    .heading-group { display: flex; flex-direction: column; gap: 8px; }
     .heading { font-family: 'Portada',Georgia,serif; font-weight: 600; font-size: 28px; line-height: 32px; letter-spacing: -0.03px; color: #272727; }
-    .subtext { font-family: 'Hauss',sans-serif; font-weight: 400; font-size: 16px; line-height: 24px; color: #525252; margin-top: 8px; }
+    .subtext { font-family: 'Hauss',sans-serif; font-weight: 400; font-size: 16px; line-height: 24px; color: #525252; }
 
     .input-group { display: flex; flex-direction: column; gap: 12px; width: 100%; }
     .input-label { font-family: 'Hauss',sans-serif; font-weight: 500; font-size: 16px; line-height: 20px; color: #272727; }
@@ -122,8 +123,10 @@
 
     <div class="content">
       <div class="question-and-input">
-        <p class="heading">What's your birthdate?</p>
-        <p class="subtext">Your birthdate helps us estimate growth and income options designed for your timeline.</p>
+        <div class="heading-group">
+          <p class="heading">What's your birthdate?</p>
+          <p class="subtext">Your birthdate helps us estimate growth and income options designed for your timeline.</p>
+        </div>
 
         <div class="input-group">
           <span class="input-label">Date of birth</span>
