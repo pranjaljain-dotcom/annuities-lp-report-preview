@@ -225,6 +225,34 @@
       border-color: #056257;
       box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05), 0 0 0 3px rgba(5, 98, 87, 0.12);
     }
+    .input-wrapper.is-destructive {
+      border-color: #F44B40;
+      box-shadow: none;
+    }
+    .input-wrapper.is-destructive:focus-within {
+      border-color: #F44B40;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05), 0 0 0 3px rgba(244, 75, 64, 0.12);
+    }
+    .alert-icon {
+      flex-shrink: 0;
+      display: none;
+      margin-left: 8px;
+    }
+    .input-wrapper.is-destructive .alert-icon {
+      display: block;
+    }
+    .hint-text {
+      font-family: 'Hauss', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 16px;
+      color: #AD3530;
+      display: none;
+      margin-top: 4px;
+    }
+    .hint-text.visible {
+      display: block;
+    }
     .input-wrapper input {
       flex: 1;
       border: none;
@@ -461,9 +489,18 @@
 
           <div class="input-group">
             <span class="input-label">Email</span>
-            <div class="input-wrapper">
+            <div class="input-wrapper" id="inputWrapper">
               <input id="emailInput" type="email" placeholder="e.g. email@email.com" autocomplete="off" />
+              <div class="alert-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_alert)">
+                    <path d="M8.00001 5.33334V8.00001M8.00001 10.6667H8.00668M14.6667 8.00001C14.6667 11.6819 11.6819 14.6667 8.00001 14.6667C4.31811 14.6667 1.33334 11.6819 1.33334 8.00001C1.33334 4.31811 4.31811 1.33334 8.00001 1.33334C11.6819 1.33334 14.6667 4.31811 14.6667 8.00001Z" stroke="#F44B40" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+                  </g>
+                  <defs><clipPath id="clip0_alert"><rect width="16" height="16" fill="white"/></clipPath></defs>
+                </svg>
+              </div>
             </div>
+            <span class="hint-text" id="hintText">This is an error message.</span>
           </div>
         </div>
 
@@ -588,6 +625,26 @@
       requestAnimationFrame(() => {
         bottomWrapper.style.transition = '';
       });
+    });
+
+    const inputWrapper = document.getElementById('inputWrapper');
+    const hintText = document.getElementById('hintText');
+
+    document.querySelector('.btn-next').addEventListener('click', () => {
+      if (!emailInput.value.trim()) {
+        inputWrapper.classList.add('is-destructive');
+        hintText.classList.add('visible');
+      } else {
+        inputWrapper.classList.remove('is-destructive');
+        hintText.classList.remove('visible');
+      }
+    });
+
+    emailInput.addEventListener('input', () => {
+      if (emailInput.value.trim()) {
+        inputWrapper.classList.remove('is-destructive');
+        hintText.classList.remove('visible');
+      }
     });
 
     emailInput.addEventListener('focus', slideUp);
