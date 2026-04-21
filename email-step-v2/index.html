@@ -369,12 +369,7 @@
     /* ── MOBILE ─────────────────────────────────────────── */
     @media (hover: none) and (pointer: coarse) {
       body { align-items: flex-start; padding: 0; background: #fff; }
-      .phone { width: 100%; min-height: 100dvh; border-radius: 0; box-shadow: none; }
-      .bottom-wrapper {
-        position: fixed;
-        bottom: 0;
-        transition: bottom 0.1s ease-out;
-      }
+      .phone { width: 100%; min-height: 100svh; border-radius: 0; box-shadow: none; }
       .content { padding-bottom: 100px; }
     }
   </style>
@@ -507,19 +502,6 @@
     const emailInput    = document.getElementById('emailInput');
     const keyboard      = document.getElementById('keyboard');
     const bottomWrapper = document.querySelector('.bottom-wrapper');
-
-    const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-
-    // On mobile, keep footer pinned above native keyboard
-    if (isMobile && window.visualViewport) {
-      const footer = document.querySelector('.bottom-wrapper');
-      const updateFooter = () => {
-        const keyboardHeight = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
-        footer.style.bottom = Math.max(0, keyboardHeight) + 'px';
-      };
-      window.visualViewport.addEventListener('resize', updateFooter);
-      window.visualViewport.addEventListener('scroll', updateFooter);
-    }
 
     setTimeout(() => emailInput.focus(), 100);
 

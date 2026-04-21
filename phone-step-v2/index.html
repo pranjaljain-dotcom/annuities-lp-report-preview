@@ -363,12 +363,7 @@
     /* ── MOBILE ─────────────────────────────────────────── */
     @media (hover: none) and (pointer: coarse) {
       body { align-items: flex-start; padding: 0; background: #fff; }
-      .phone { width: 100%; min-height: 100dvh; border-radius: 0; box-shadow: none; }
-      .bottom-wrapper {
-        position: fixed;
-        bottom: 0;
-        transition: bottom 0.1s ease-out;
-      }
+      .phone { width: 100%; min-height: 100svh; border-radius: 0; box-shadow: none; }
       .content { padding-bottom: 100px; }
     }
   </style>
@@ -535,15 +530,6 @@
     document.getElementById('btnNext').addEventListener('click', validate);
 
     setTimeout(() => phoneInput.focus(), 350);
-
-    if (isMobile && window.visualViewport) {
-      const updateFooter = () => {
-        const keyboardHeight = window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
-        bottomWrapper.style.bottom = Math.max(0, keyboardHeight) + 'px';
-      };
-      window.visualViewport.addEventListener('resize', updateFooter);
-      window.visualViewport.addEventListener('scroll', updateFooter);
-    }
 
     // Wait for slide-in animation (320ms) then focus input
     setTimeout(() => phoneInput.focus(), 350);
