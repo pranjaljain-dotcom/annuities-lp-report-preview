@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Annuities – What's your birthdate?</title>
-  <link rel="stylesheet" href="../components.css" />
+  <link rel="stylesheet" href="../../components.css" />
   <style>.progress__fill { width: 6%; }</style>
 </head>
 <body>
@@ -61,29 +61,26 @@
       <div class="spacer"></div>
     </div>
 
-    </div></div>
-
-    <div class="keyboard-wrapper" id="keyboardWrapper"></div>
-
-    <div class="bottom-wrapper--v2" id="bottomWrapper">
+    <div class="bottom-wrapper" id="bottomWrapper">
       <div class="footer">
         <button class="btn-next" id="btnNext">Next</button>
       </div>
     </div>
 
+    </div></div>
+
   </div>
 
-  <script src="../components.js"></script>
+  <script src="../../components.js"></script>
   <script>
     var bdInput      = document.getElementById('bdInput');
     var inputWrapper = document.getElementById('inputWrapper');
     var hintText     = document.getElementById('hintText');
-    var keyboardWrapper = document.getElementById('keyboardWrapper');
-    var bottomWrapper   = document.getElementById('bottomWrapper');
+    var bottomWrapper = document.getElementById('bottomWrapper');
 
     var keyboard = document.createElement('div');
     EDS.buildIosKeyboard(keyboard);
-    keyboardWrapper.appendChild(keyboard);
+    bottomWrapper.appendChild(keyboard);
 
     function getDigits(v) { return v.replace(/\D/g,''); }
     function clearError() {
@@ -104,7 +101,7 @@
       clearError();
     });
 
-    EDS.initV2Keyboard(bdInput, keyboardWrapper, bottomWrapper, function (key) {
+    EDS.initV1Keyboard(bdInput, bottomWrapper, keyboard, function (key) {
       var digits = getDigits(bdInput.value);
       if (key === 'delete') {
         bdInput.value = EDS.formatDate(digits.slice(0,-1));
@@ -113,6 +110,8 @@
       }
       clearError();
     });
+
+    EDS.autoFocus(bdInput);
 
     function isValidDate(digits) {
       if (digits.length !== 8) return false;
@@ -131,7 +130,7 @@
         inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
       }
       inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
-      EDS.navigate('../name-step-v2/');
+      EDS.navigate('../name-step/');
     });
   </script>
 </body>

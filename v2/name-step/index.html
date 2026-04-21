@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Annuities – Where should we send options</title>
-  <link rel="stylesheet" href="../components.css" />
-  <style>.progress__fill { width: 10%; }</style>
+  <title>Annuities – What's your name?</title>
+  <link rel="stylesheet" href="../../components.css" />
+  <style>.progress__fill { width: 5%; }</style>
 </head>
 <body>
   <div class="phone">
@@ -43,12 +43,12 @@
     <div class="content">
       <div class="top-group">
         <div class="question-and-input">
-          <p class="heading">Where should we send options designed to meet your financial goals?</p>
+          <p class="heading">What's your name?</p>
 
           <div class="input-group">
-            <span class="input-label">Email</span>
+            <span class="input-label">Full name</span>
             <div class="input-wrapper" id="inputWrapper">
-              <input id="emailInput" type="email" placeholder="e.g. email@email.com" autocomplete="off" />
+              <input id="nameInput" type="text" placeholder="e.g. Jane Smith" autocomplete="name" autocapitalize="words" />
               <div class="alert-icon">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#a)"><path d="M8 5.33V8M8 10.67H8.007M14.667 8A6.667 6.667 0 1 1 1.333 8a6.667 6.667 0 0 1 13.334 0Z" stroke="#F44B40" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="a"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>
               </div>
@@ -66,70 +66,58 @@
       </div>
 
       <div class="spacer"></div>
-
-      <p class="legal">
-        By clicking &#8220;Next&#8221;, I confirm that I have received, read and agree to:
-        <a href="#">Phone/SMS Consent</a>,
-        <a href="#">Privacy Policy</a>, and
-        <a href="#">Terms of Use</a>
-      </p>
     </div>
 
-    <div class="bottom-wrapper" id="bottomWrapper">
+    </div></div>
+
+    <div class="keyboard-wrapper" id="keyboardWrapper"></div>
+
+    <div class="bottom-wrapper--v2" id="bottomWrapper">
       <div class="footer">
         <button class="btn-next" id="btnNext">Next</button>
       </div>
     </div>
 
-    </div></div>
-
   </div>
 
-  <script src="../components.js"></script>
+  <script src="../../components.js"></script>
   <script>
-    var emailInput    = document.getElementById('emailInput');
-    var inputWrapper  = document.getElementById('inputWrapper');
-    var hintText      = document.getElementById('hintText');
-    var bottomWrapper = document.getElementById('bottomWrapper');
+    var nameInput       = document.getElementById('nameInput');
+    var inputWrapper    = document.getElementById('inputWrapper');
+    var hintText        = document.getElementById('hintText');
+    var keyboardWrapper = document.getElementById('keyboardWrapper');
+    var bottomWrapper   = document.getElementById('bottomWrapper');
 
     var keyboard = document.createElement('div');
     EDS.buildQwertyKeyboard(keyboard);
-    bottomWrapper.appendChild(keyboard);
+    keyboardWrapper.appendChild(keyboard);
 
-    emailInput.addEventListener('input', function () {
-      if (emailInput.value.trim()) {
+    nameInput.addEventListener('input', function () {
+      if (nameInput.value.trim()) {
         inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
       }
     });
 
-    EDS.initV1Keyboard(emailInput, bottomWrapper, keyboard, function (key) {
+    EDS.initV2Keyboard(nameInput, keyboardWrapper, bottomWrapper, function (key) {
       if (key === 'delete') {
-        emailInput.value = emailInput.value.slice(0, -1);
+        nameInput.value = nameInput.value.slice(0, -1);
       } else if (key === 'return') {
-        emailInput.blur();
+        nameInput.blur();
       } else if (key === 'space') {
-        emailInput.value += ' ';
+        nameInput.value += ' ';
       } else if (key !== 'shift' && key !== 'alt') {
-        emailInput.value += key;
+        nameInput.value += key;
       }
     });
 
-    EDS.autoFocus(emailInput, 100);
-
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     document.getElementById('btnNext').addEventListener('click', function () {
-      var val = emailInput.value.trim();
+      var val = nameInput.value.trim();
       if (!val) {
-        hintText.textContent = 'Enter your email so we know where to send your options.';
-        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
-      }
-      if (!emailRegex.test(val)) {
-        hintText.textContent = 'That doesn\'t look right — please check your email address.';
+        hintText.textContent = 'Enter your name to continue.';
         inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
       }
       inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
-      EDS.navigate('../phone-step/');
+      EDS.navigate('../email-step/');
     });
   </script>
 </body>

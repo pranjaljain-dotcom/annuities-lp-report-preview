@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Annuities – What state are you in?</title>
-  <link rel="stylesheet" href="../components.css" />
-  <style>.progress__fill { width: 2%; }</style>
+  <title>Annuities – How can we reach you?</title>
+  <link rel="stylesheet" href="../../components.css" />
+  <style>.progress__fill { width: 20%; }</style>
 </head>
 <body>
   <div class="phone">
@@ -41,29 +41,45 @@
     <div class="slide-inner" id="slideInner">
 
     <div class="content">
-      <div class="question-and-input">
-        <p class="heading">What state are you in?</p>
+      <div class="top-group">
+        <div class="question-and-input">
+          <p class="heading">How can we reach you?</p>
 
-        <div class="input-group">
-          <span class="input-label">State</span>
-          <div class="select-wrapper" id="dropdownWrapper">
-            <div class="dropdown-trigger" id="dropdownTrigger" tabindex="0">
-              <span class="dropdown-value" id="dropdownValue">Select your state</span>
-              <span class="dropdown-chevron">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#525252" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
+          <div class="input-group">
+            <span class="input-label">Phone number</span>
+            <div class="input-wrapper" id="inputWrapper">
+              <input id="phoneInput" type="tel" inputmode="tel" placeholder="(212) 555-1234" autocomplete="tel" />
+              <div class="alert-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#a)"><path d="M8 5.33V8M8 10.67H8.007M14.667 8A6.667 6.667 0 1 1 1.333 8a6.667 6.667 0 0 1 13.334 0Z" stroke="#F44B40" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="a"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>
+              </div>
             </div>
-            <div class="dropdown-panel" id="dropdownPanel"></div>
+            <span class="hint-text" id="hintText"></span>
           </div>
-          <span class="hint-text" id="hintText">Please select your state.</span>
+        </div>
+
+        <div class="security-row">
+          <div class="security-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="7" width="11" height="8.5" rx="1.5" stroke="#525252" stroke-width="1.3"/><path d="M5 7V5C5 3.34 6.34 2 8 2s3 1.34 3 3v2" stroke="#525252" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="#525252"/></svg>
+          </div>
+          <span class="security-text">Your information is 100% secure and confidential.</span>
         </div>
       </div>
+
       <div class="spacer"></div>
+
+      <p class="legal">
+        By clicking &#8220;Next&#8221;, I confirm that I have received, read and agree to:
+        <a href="#">Phone/SMS Consent</a>,
+        <a href="#">Privacy Policy</a>, and
+        <a href="#">Terms of Use</a>
+      </p>
     </div>
 
     </div></div>
 
-    <div class="bottom-wrapper--v2">
+    <div class="keyboard-wrapper" id="keyboardWrapper"></div>
+
+    <div class="bottom-wrapper--v2" id="bottomWrapper">
       <div class="footer">
         <button class="btn-next" id="btnNext">Next</button>
       </div>
@@ -71,24 +87,47 @@
 
   </div>
 
-  <script src="../components.js"></script>
+  <script src="../../components.js"></script>
   <script>
-    var STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+    var phoneInput      = document.getElementById('phoneInput');
+    var inputWrapper    = document.getElementById('inputWrapper');
+    var hintText        = document.getElementById('hintText');
+    var keyboardWrapper = document.getElementById('keyboardWrapper');
+    var bottomWrapper   = document.getElementById('bottomWrapper');
 
-    var dropdown = EDS.initDropdown({
-      wrapperId: 'dropdownWrapper',
-      triggerId: 'dropdownTrigger',
-      panelId:   'dropdownPanel',
-      valueId:   'dropdownValue',
-      hintId:    'hintText',
-      options:   STATES
+    var keyboard = document.createElement('div');
+    EDS.buildIosKeyboard(keyboard);
+    keyboardWrapper.appendChild(keyboard);
+
+    phoneInput.addEventListener('input', function () {
+      var raw = phoneInput.value.replace(/\D/g, '');
+      phoneInput.value = EDS.formatPhone(raw);
+      if (raw.length > 0) {
+        inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
+      }
     });
 
-    EDS.initMobileFooter(document.querySelector('.bottom-wrapper--v2'));
+    EDS.initV2Keyboard(phoneInput, keyboardWrapper, bottomWrapper, function (key) {
+      var digits = phoneInput.value.replace(/\D/g, '');
+      if (key === 'delete') {
+        phoneInput.value = EDS.formatPhone(digits.slice(0, -1));
+      } else if (key !== 'noop' && digits.length < 10) {
+        phoneInput.value = EDS.formatPhone(digits + key);
+      }
+      phoneInput.dispatchEvent(new Event('input'));
+    });
 
     document.getElementById('btnNext').addEventListener('click', function () {
-      if (!dropdown.getValue()) { dropdown.showError(); return; }
-      EDS.navigate('../zip-step-v2/');
+      var digits = phoneInput.value.replace(/\D/g, '');
+      if (!digits) {
+        hintText.textContent = 'Enter your phone number so we can reach you.';
+        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
+      }
+      if (digits.length < 10) {
+        hintText.textContent = 'Please enter a valid 10-digit US phone number.';
+        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
+      }
+      inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
     });
   </script>
 </body>
