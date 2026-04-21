@@ -656,8 +656,9 @@
       }
     });
 
-    function slideUp()   { keyboardWrapper.classList.add('is-open'); }
-    function slideDown() { keyboardWrapper.classList.remove('is-open'); }
+    const bottomWrapper = document.querySelector('.bottom-wrapper');
+    function slideUp()   { keyboardWrapper.classList.add('is-open'); bottomWrapper.style.display = 'none'; }
+    function slideDown() { keyboardWrapper.classList.remove('is-open'); bottomWrapper.style.display = ''; }
 
     if (!isMobile) {
       phoneInput.addEventListener('focus', slideUp);
