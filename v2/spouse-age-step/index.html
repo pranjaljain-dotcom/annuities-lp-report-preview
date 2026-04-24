@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Annuities – What's your name?</title>
+  <title>Annuities – Spouse date of birth</title>
   <link rel="stylesheet" href="../../components.css" />
-  <style>.progress__fill { width: 5%; }</style>
+  <style>.progress__fill { width: 48%; }</style>
 </head>
 <body>
   <div class="phone">
@@ -41,30 +41,23 @@
     <div class="slide-inner" id="slideInner">
 
     <div class="content">
-      <div class="top-group">
-        <div class="question-and-input">
-          <p class="heading">What's your name?</p>
-
-          <div class="input-group">
-            <span class="input-label">Full name</span>
-            <div class="input-wrapper" id="inputWrapper">
-              <input id="nameInput" type="text" placeholder="e.g. Jane Smith" autocomplete="name" autocapitalize="words" />
-              <div class="alert-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#a)"><path d="M8 5.33V8M8 10.67H8.007M14.667 8A6.667 6.667 0 1 1 1.333 8a6.667 6.667 0 0 1 13.334 0Z" stroke="#F44B40" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="a"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>
-              </div>
-            </div>
-            <span class="hint-text" id="hintText"></span>
-          </div>
+      <div class="question-and-input">
+        <div class="heading-group">
+          <p class="heading">What&rsquo;s your spouse&rsquo;s date of birth?</p>
+          <p class="subtext">We use this to help personalize your plan.</p>
         </div>
 
-        <div class="security-row">
-          <div class="security-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="7" width="11" height="8.5" rx="1.5" stroke="#525252" stroke-width="1.3"/><path d="M5 7V5C5 3.34 6.34 2 8 2s3 1.34 3 3v2" stroke="#525252" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="#525252"/></svg>
+        <div class="input-group">
+          <span class="input-label">Date of birth</span>
+          <div class="input-wrapper" id="inputWrapper">
+            <input id="spouseInput" type="text" inputmode="numeric" placeholder="mm/dd/yyyy" maxlength="10" autocomplete="bday" />
+            <div class="alert-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#a)"><path d="M8 5.33V8M8 10.67H8.007M14.667 8A6.667 6.667 0 1 1 1.333 8a6.667 6.667 0 0 1 13.334 0Z" stroke="#F44B40" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="a"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>
+            </div>
           </div>
-          <span class="security-text">We use secure encryption to protect your data.</span>
+          <span class="hint-text" id="hintText"></span>
         </div>
       </div>
-
       <div class="spacer"></div>
     </div>
 
@@ -82,42 +75,63 @@
 
   <script src="../../components.js"></script>
   <script>
-    var nameInput       = document.getElementById('nameInput');
+    var spouseInput     = document.getElementById('spouseInput');
     var inputWrapper    = document.getElementById('inputWrapper');
     var hintText        = document.getElementById('hintText');
     var keyboardWrapper = document.getElementById('keyboardWrapper');
     var bottomWrapper   = document.getElementById('bottomWrapper');
 
     var keyboard = document.createElement('div');
-    EDS.buildQwertyKeyboard(keyboard);
+    EDS.buildIosKeyboard(keyboard);
     keyboardWrapper.appendChild(keyboard);
 
-    nameInput.addEventListener('input', function () {
-      if (nameInput.value.trim()) {
+    function getDigits(v) { return v.replace(/\D/g,''); }
+    function clearError() {
+      if (getDigits(spouseInput.value).length > 0) {
         inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
       }
-    });
+    }
 
-    EDS.initV2Keyboard(nameInput, keyboardWrapper, bottomWrapper, function (key) {
-      if (key === 'delete') {
-        nameInput.value = nameInput.value.slice(0, -1);
-      } else if (key === 'return') {
-        nameInput.blur();
-      } else if (key === 'space') {
-        nameInput.value += ' ';
-      } else if (key !== 'shift' && key !== 'alt') {
-        nameInput.value += key;
+    spouseInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        spouseInput.value = EDS.formatDate(getDigits(spouseInput.value).slice(0,-1));
+        clearError();
       }
     });
+    spouseInput.addEventListener('input', function () {
+      spouseInput.value = EDS.formatDate(getDigits(spouseInput.value).slice(0,8));
+      clearError();
+    });
+
+    EDS.initV2Keyboard(spouseInput, keyboardWrapper, bottomWrapper, function (key) {
+      var digits = getDigits(spouseInput.value);
+      if (key === 'delete') {
+        spouseInput.value = EDS.formatDate(digits.slice(0,-1));
+      } else if (key !== 'noop' && digits.length < 8) {
+        spouseInput.value = EDS.formatDate(digits + key);
+      }
+      clearError();
+    });
+
+    function isValidDate(digits) {
+      if (digits.length !== 8) return false;
+      var mm = parseInt(digits.slice(0,2)), dd = parseInt(digits.slice(2,4)), yyyy = parseInt(digits.slice(4,8));
+      return mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31 && yyyy >= 1900 && yyyy <= new Date().getFullYear();
+    }
 
     document.getElementById('btnNext').addEventListener('click', function () {
-      var val = nameInput.value.trim();
-      if (!val) {
-        hintText.textContent = 'Enter your name to continue.';
+      var digits = getDigits(spouseInput.value);
+      if (!digits) {
+        hintText.textContent = 'Enter your spouse\u2019s date of birth to continue.';
+        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
+      }
+      if (!isValidDate(digits)) {
+        hintText.textContent = 'Please enter a valid date in mm/dd/yyyy format.';
         inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
       }
       inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
-      EDS.navigate('../email-step/');
+      EDS.navigate('../name-step/');
     });
   </script>
 </body>

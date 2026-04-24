@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Annuities – What's your name?</title>
+  <title>Annuities – When to start income?</title>
   <link rel="stylesheet" href="../../components.css" />
-  <style>.progress__fill { width: 5%; }</style>
+  <style>.progress__fill { width: 18%; }</style>
 </head>
 <body>
   <div class="phone">
@@ -41,83 +41,54 @@
     <div class="slide-inner" id="slideInner">
 
     <div class="content">
-      <div class="top-group">
-        <div class="question-and-input">
-          <p class="heading">What's your name?</p>
+      <div class="question-and-input">
+        <p class="heading">What age do you want to start receiving guaranteed income payments?</p>
 
-          <div class="input-group">
-            <span class="input-label">Full name</span>
-            <div class="input-wrapper" id="inputWrapper">
-              <input id="nameInput" type="text" placeholder="e.g. Jane Smith" autocomplete="name" autocapitalize="words" />
-              <div class="alert-icon">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#a)"><path d="M8 5.33V8M8 10.67H8.007M14.667 8A6.667 6.667 0 1 1 1.333 8a6.667 6.667 0 0 1 13.334 0Z" stroke="#F44B40" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="a"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>
-              </div>
+        <div class="input-group">
+          <span class="input-label">Age</span>
+          <div class="select-wrapper" id="dropdownWrapper">
+            <div class="dropdown-trigger" id="dropdownTrigger" tabindex="0">
+              <span class="dropdown-value" id="dropdownValue">Select an age</span>
+              <span class="dropdown-chevron">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#525252" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
             </div>
-            <span class="hint-text" id="hintText"></span>
+            <div class="dropdown-panel" id="dropdownPanel"></div>
           </div>
-        </div>
-
-        <div class="security-row">
-          <div class="security-icon">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="7" width="11" height="8.5" rx="1.5" stroke="#525252" stroke-width="1.3"/><path d="M5 7V5C5 3.34 6.34 2 8 2s3 1.34 3 3v2" stroke="#525252" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="#525252"/></svg>
-          </div>
-          <span class="security-text">We use secure encryption to protect your data.</span>
+          <span class="hint-text" id="hintText">Please select an age.</span>
         </div>
       </div>
-
       <div class="spacer"></div>
     </div>
 
-    </div></div>
-
-    <div class="keyboard-wrapper" id="keyboardWrapper"></div>
-
-    <div class="bottom-wrapper--v2" id="bottomWrapper">
+    <div class="bottom-wrapper" id="bottomWrapper">
       <div class="footer">
         <button class="btn-next" id="btnNext">Next</button>
       </div>
     </div>
 
+    </div></div>
+
   </div>
 
   <script src="../../components.js"></script>
   <script>
-    var nameInput       = document.getElementById('nameInput');
-    var inputWrapper    = document.getElementById('inputWrapper');
-    var hintText        = document.getElementById('hintText');
-    var keyboardWrapper = document.getElementById('keyboardWrapper');
-    var bottomWrapper   = document.getElementById('bottomWrapper');
+    var AGES = Array.from({length: 31}, function(_, i) { return (55 + i) + ' years old'; });
 
-    var keyboard = document.createElement('div');
-    EDS.buildQwertyKeyboard(keyboard);
-    keyboardWrapper.appendChild(keyboard);
-
-    nameInput.addEventListener('input', function () {
-      if (nameInput.value.trim()) {
-        inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
-      }
+    var dropdown = EDS.initDropdown({
+      wrapperId: 'dropdownWrapper',
+      triggerId: 'dropdownTrigger',
+      panelId:   'dropdownPanel',
+      valueId:   'dropdownValue',
+      hintId:    'hintText',
+      options:   AGES
     });
 
-    EDS.initV2Keyboard(nameInput, keyboardWrapper, bottomWrapper, function (key) {
-      if (key === 'delete') {
-        nameInput.value = nameInput.value.slice(0, -1);
-      } else if (key === 'return') {
-        nameInput.blur();
-      } else if (key === 'space') {
-        nameInput.value += ' ';
-      } else if (key !== 'shift' && key !== 'alt') {
-        nameInput.value += key;
-      }
-    });
+    EDS.initMobileFooter(document.querySelector('.bottom-wrapper'));
 
     document.getElementById('btnNext').addEventListener('click', function () {
-      var val = nameInput.value.trim();
-      if (!val) {
-        hintText.textContent = 'Enter your name to continue.';
-        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
-      }
-      inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
-      EDS.navigate('../email-step/');
+      if (!dropdown.getValue()) { dropdown.showError(); return; }
+      EDS.navigate('../investment-amount-step/');
     });
   </script>
 </body>

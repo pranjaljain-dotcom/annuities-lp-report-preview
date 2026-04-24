@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Annuities – Where should we send options</title>
+  <style>
+    @font-face {
+      font-family: 'Hauss';
+      src: url('../annuities-mobile/fonts/Hauss-Regular.ttf') format('truetype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'Hauss';
+      src: url('../annuities-mobile/fonts/Hauss-Medium.ttf') format('truetype');
+      font-weight: 500;
+    }
+    @font-face {
+      font-family: 'Hauss';
+      src: url('../annuities-mobile/fonts/Hauss-Bold.ttf') format('truetype');
+      font-weight: 700;
+    }
+    @font-face {
+      font-family: 'Portada';
+      src: url('../annuities-mobile/fonts/Portada-Semibold.ttf') format('truetype');
+      font-weight: 600;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: #e0e0e0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 32px 0 48px;
+      font-family: 'Hauss', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* ── PHONE FRAME ────────────────────────────────────── */
+    .phone {
+      width: 375px;
+      min-height: 812px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      border-radius: 48px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.1);
+      position: relative; /* positioning context for keyboard */
+    }
+
+    /* ── STATUS BAR ─────────────────────────────────────── */
+    .status-bar {
+      height: 44px;
+      position: relative;
+      flex-shrink: 0;
+      background: #fff;
+    }
+    .status-bar__time {
+      position: absolute;
+      left: 29.5px;
+      top: calc(50% + 1px);
+      transform: translateY(-50%);
+      font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.165px;
+      color: #000;
+      line-height: 1;
+    }
+    .status-bar__island {
+      position: absolute;
+      top: 0;
+      left: 102px;
+      width: 171px;
+      height: 38px;
+      background: #000;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    .status-bar__icons {
+      position: absolute;
+      right: 13.5px;
+      top: calc(50% + 1.1px);
+      transform: translateY(-50%);
+      height: 13px;
+      width: 68px;
+    }
+    .status-bar__icons img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── NAV HEADER ─────────────────────────────────────── */
+    .nav {
+      height: 52px;
+      position: relative;
+      flex-shrink: 0;
+      background: #fff;
+    }
+
+    /* Back button: 24×24 container, arrow image inset 16.67% (~4px) per Figma */
+    .nav__back {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .nav__back img {
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav__logo {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 62px;
+      height: 12px;
+    }
+    .nav__logo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .nav__help {
+      position: absolute;
+      right: 16px;
+      top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-decoration: none;
+    }
+    .nav__help-label {
+      font-family: 'Hauss', sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      line-height: 16px;
+      color: #525252;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+    }
+    .nav__help-number {
+      font-family: 'Hauss', sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 18px;
+      color: #04463E;
+    }
+
+    /* ── PROGRESS BAR ───────────────────────────────────── */
+    .progress {
+      padding: 0 16px;
+      flex-shrink: 0;
+      background: #fff;
+    }
+    .progress__track {
+      width: 100%;
+      height: 8px;
+      background: #F3F7F7;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress__fill {
+      height: 100%;
+      width: 10%;
+      background: #056257;
+      border-radius: 4px;
+    }
+
+    /* ── MAIN CONTENT ───────────────────────────────────── */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      /* 112px = footer height (96px) + 16px gap above footer */
+      padding: 36px 16px 112px;
+    }
+
+    .top-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .question-and-input {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .heading {
+      font-family: 'Portada', Georgia, serif;
+      font-weight: 600;
+      font-size: 28px;
+      line-height: 32px;
+      letter-spacing: -0.03px;
+      color: #272727;
+    }
+
+    /* Input field */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+    .input-label {
+      font-family: 'Hauss', sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 20px;
+      color: #272727;
+    }
+    .input-wrapper {
+      width: 100%;
+      min-height: 56px;
+      background: #fff;
+      border: 2px solid #D4D4D4;
+      border-radius: 8px;
+      padding: 16px 14px;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      display: flex;
+      align-items: center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input-wrapper:focus-within {
+      border-color: #056257;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05), 0 0 0 3px rgba(5, 98, 87, 0.12);
+    }
+    .input-wrapper input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: 'Hauss', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 24px;
+      color: #272727;
+      background: transparent;
+    }
+    .input-wrapper input::placeholder {
+      color: #7e7e7e;
+    }
+
+    /* Security row */
+    .security-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 18px 0;
+    }
+    .security-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .security-icon__inner {
+      position: absolute;
+      top: 4.17%;
+      left: 16.67%;
+      right: 16.67%;
+      bottom: 8.33%;
+      -webkit-mask-image: url('https://www.figma.com/api/mcp/asset/de3f7e7a-e196-4881-bd96-23330b0d9b47');
+      mask-image: url('https://www.figma.com/api/mcp/asset/de3f7e7a-e196-4881-bd96-23330b0d9b47');
+      -webkit-mask-size: 24px 24px;
+      mask-size: 24px 24px;
+      -webkit-mask-position: -4px -1px;
+      mask-position: -4px -1px;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    .security-icon__inner img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+    }
+    .security-text {
+      font-family: 'Hauss', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 16px;
+      color: #525252;
+    }
+
+    .spacer { flex: 1; }
+
+    /* Legal text */
+    .legal {
+      font-family: 'Hauss', sans-serif;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 18px;
+      color: #525252;
+    }
+    .legal a {
+      color: #525252;
+      text-decoration: underline;
+      text-underline-offset: 1px;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    .footer {
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0px -2px 4px 0px rgba(16, 24, 40, 0.06),
+                  0px -4px 8px 0px rgba(16, 24, 40, 0.10);
+      flex-shrink: 0;
+    }
+    .btn-next {
+      width: 100%;
+      min-height: 64px;
+      background: #272727;
+      border: 1px solid #272727;
+      border-radius: 8px;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 20px;
+      cursor: pointer;
+      font-family: 'Hauss', sans-serif;
+      font-weight: 500;
+      font-size: 19px;
+      line-height: 24px;
+      color: #fff;
+      transition: background 0.15s;
+    }
+    .btn-next:hover { background: #3a3a3a; }
+    .btn-next:active { background: #444; }
+
+    /* ── BOTTOM WRAPPER (footer + keyboard, slide as one unit) ── */
+    .bottom-wrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      /* JS sets initial translateY(keyboardHeight) so only footer peeks out */
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── iOS KEYBOARD ───────────────────────────────────── */
+    .keyboard {
+      background: #CDD0D5;
+      padding: 8px 3px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      user-select: none;
+    }
+
+    /* Keyboard rows */
+    .kb-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    /* Base key style */
+    .kb-key {
+      height: 42px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #000;
+      background: #fff;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.40), inset 0 0 0 0.5px rgba(0,0,0,0.12);
+      flex-shrink: 0;
+      letter-spacing: 0;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.06s;
+    }
+    .kb-key:active {
+      background: #E5E5EA;
+    }
+
+    /* Letter keys: equal flex in their rows */
+    .kb-key--letter {
+      flex: 1;
+    }
+
+    /* Special keys (shift, delete, 123, return) */
+    .kb-key--special {
+      background: #ADB5BD;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.40), inset 0 0 0 0.5px rgba(0,0,0,0.15);
+      font-size: 14px;
+    }
+    .kb-key--special:active {
+      background: #9ca3af;
+    }
+
+    /* Shift / delete fixed widths */
+    .kb-key--shift,
+    .kb-key--delete { width: 46px; }
+
+    /* Row 2 side padding to center the 9 keys */
+    .kb-row--2 { padding: 0 20px; }
+
+    /* Bottom row */
+    .kb-key--alt  { width: 88px; font-size: 15px; }
+    .kb-key--space { flex: 1; font-size: 15px; }
+    .kb-key--return { width: 88px; font-size: 15px; color: #000; }
+
+    /* Home indicator bar */
+    .kb-home-bar {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #CDD0D5;
+    }
+    .kb-home-bar__pill {
+      width: 134px;
+      height: 5px;
+      background: #3a3a3c;
+      border-radius: 3px;
+      opacity: 0.7;
+    }
+
+    /* Shift icon SVG */
+    .kb-shift-icon {
+      width: 18px;
+      height: 18px;
+    }
+    /* Delete icon SVG */
+    .kb-del-icon {
+      width: 20px;
+      height: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone">
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+      <span class="status-bar__time">9:41</span>
+      <div class="status-bar__island"></div>
+      <div class="status-bar__icons">
+        <img src="https://www.figma.com/api/mcp/asset/1d02a6a0-cc79-4a5b-8e62-e6116648596b" alt="" />
+      </div>
+    </div>
+
+    <!-- NAV HEADER -->
+    <div class="nav">
+      <button class="nav__back" aria-label="Go back">
+        <img src="https://www.figma.com/api/mcp/asset/e4b08e7d-db6b-4e4d-a568-afdf5f09fe96" alt="" />
+      </button>
+      <div class="nav__logo">
+        <img src="https://www.figma.com/api/mcp/asset/9f17bfdd-c4ef-4154-a164-df08faeb9029" alt="Ethos" />
+      </div>
+      <a class="nav__help" href="tel:4152759050">
+        <span class="nav__help-label">Need help?</span>
+        <span class="nav__help-number">(415) 275-9050</span>
+      </a>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress">
+      <div class="progress__track">
+        <div class="progress__fill"></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+      <div class="top-group">
+        <div class="question-and-input">
+          <p class="heading">Where should we send options designed to meet your financial goals?</p>
+
+          <div class="input-group">
+            <span class="input-label">Email</span>
+            <div class="input-wrapper">
+              <input id="emailInput" type="email" placeholder="e.g. emai@email.com" autocomplete="off" />
+            </div>
+          </div>
+        </div>
+
+        <div class="security-row">
+          <div class="security-icon">
+            <div class="security-icon__inner">
+              <img src="https://www.figma.com/api/mcp/asset/d0ae601c-749b-4e06-b427-0efaad1ccbc4" alt="" />
+            </div>
+          </div>
+          <span class="security-text">We use secure encryption to protect your data.</span>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <p class="legal">
+        By clicking &#8220;Next&#8221;, I confirm that I have received, read and agree to:
+        <a href="#">Phone/SMS Consent</a>,
+        <a href="#">Privacy Policy</a>, and
+        <a href="#">Terms of Use</a>
+      </p>
+    </div>
+
+    <!-- FOOTER + KEYBOARD (keyboard slides up beneath the Next button) -->
+    <div class="bottom-wrapper">
+    <div class="footer">
+      <button class="btn-next">Next</button>
+    </div>
+
+    <!-- iOS KEYBOARD -->
+    <div class="keyboard" id="keyboard" aria-hidden="true">
+
+      <!-- Row 1: q–p -->
+      <div class="kb-row">
+        <div class="kb-key kb-key--letter" data-key="q">q</div>
+        <div class="kb-key kb-key--letter" data-key="w">w</div>
+        <div class="kb-key kb-key--letter" data-key="e">e</div>
+        <div class="kb-key kb-key--letter" data-key="r">r</div>
+        <div class="kb-key kb-key--letter" data-key="t">t</div>
+        <div class="kb-key kb-key--letter" data-key="y">y</div>
+        <div class="kb-key kb-key--letter" data-key="u">u</div>
+        <div class="kb-key kb-key--letter" data-key="i">i</div>
+        <div class="kb-key kb-key--letter" data-key="o">o</div>
+        <div class="kb-key kb-key--letter" data-key="p">p</div>
+      </div>
+
+      <!-- Row 2: a–l (centered with side inset) -->
+      <div class="kb-row kb-row--2">
+        <div class="kb-key kb-key--letter" data-key="a">a</div>
+        <div class="kb-key kb-key--letter" data-key="s">s</div>
+        <div class="kb-key kb-key--letter" data-key="d">d</div>
+        <div class="kb-key kb-key--letter" data-key="f">f</div>
+        <div class="kb-key kb-key--letter" data-key="g">g</div>
+        <div class="kb-key kb-key--letter" data-key="h">h</div>
+        <div class="kb-key kb-key--letter" data-key="j">j</div>
+        <div class="kb-key kb-key--letter" data-key="k">k</div>
+        <div class="kb-key kb-key--letter" data-key="l">l</div>
+      </div>
+
+      <!-- Row 3: shift, z–m, delete -->
+      <div class="kb-row">
+        <div class="kb-key kb-key--special kb-key--shift" data-key="shift">
+          <!-- Shift icon -->
+          <svg class="kb-shift-icon" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 2L2 9h3.5v7h7V9H16L9 2z" fill="#3a3a3c" stroke="none"/>
+          </svg>
+        </div>
+        <div class="kb-key kb-key--letter" data-key="z">z</div>
+        <div class="kb-key kb-key--letter" data-key="x">x</div>
+        <div class="kb-key kb-key--letter" data-key="c">c</div>
+        <div class="kb-key kb-key--letter" data-key="v">v</div>
+        <div class="kb-key kb-key--letter" data-key="b">b</div>
+        <div class="kb-key kb-key--letter" data-key="n">n</div>
+        <div class="kb-key kb-key--letter" data-key="m">m</div>
+        <div class="kb-key kb-key--special kb-key--delete" data-key="delete">
+          <!-- Delete icon -->
+          <svg class="kb-del-icon" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.5 0L0 8l7.5 8H20V0H7.5z" fill="#3a3a3c"/>
+            <path d="M11 5l5 6M16 5l-5 6" stroke="#ADB5BD" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Row 4: 123 / space / return -->
+      <div class="kb-row">
+        <div class="kb-key kb-key--special kb-key--alt" data-key="alt">123</div>
+        <div class="kb-key kb-key--space" data-key="space">space</div>
+        <div class="kb-key kb-key--special kb-key--return" data-key="return">return</div>
+      </div>
+
+      <!-- Home indicator -->
+      <div class="kb-home-bar">
+        <div class="kb-home-bar__pill"></div>
+      </div>
+
+    </div><!-- /keyboard -->
+    </div><!-- /bottom-wrapper -->
+
+  </div><!-- /phone -->
+
+  <script>
+    const emailInput    = document.getElementById('emailInput');
+    const keyboard      = document.getElementById('keyboard');
+    const bottomWrapper = document.querySelector('.bottom-wrapper');
+
+    /* Offset wrapper down by keyboard height on load so only footer is visible */
+    function getKbHeight() { return keyboard.offsetHeight; }
+
+    function slideDown() {
+      bottomWrapper.style.transform = `translateY(${getKbHeight()}px)`;
+      keyboard.setAttribute('aria-hidden', 'true');
+    }
+
+    function slideUp() {
+      bottomWrapper.style.transform = 'translateY(0)';
+      keyboard.removeAttribute('aria-hidden');
+    }
+
+    /* Set initial position without transition */
+    bottomWrapper.style.transition = 'none';
+    slideDown();
+    /* Re-enable transition after first paint */
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        bottomWrapper.style.transition = '';
+      });
+    });
+
+    emailInput.addEventListener('focus', slideUp);
+
+    emailInput.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (document.activeElement !== emailInput) slideDown();
+      }, 80);
+    });
+
+    /* Key presses — mousedown + preventDefault keeps input focused */
+    keyboard.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const key = e.target.closest('[data-key]');
+      if (!key) return;
+
+      const val = key.dataset.key;
+
+      if (val === 'delete') {
+        emailInput.value = emailInput.value.slice(0, -1);
+      } else if (val === 'return') {
+        slideDown();
+        emailInput.blur();
+      } else if (val === 'space') {
+        emailInput.value += ' ';
+      } else if (val === 'shift' || val === 'alt') {
+        /* no-op for mockup */
+      } else {
+        emailInput.value += val;
+      }
+
+      emailInput.dispatchEvent(new Event('input'));
+    });
+  </script>
+
+</body>
+</html>
