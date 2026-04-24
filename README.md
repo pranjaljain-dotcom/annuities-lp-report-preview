@@ -14,32 +14,38 @@ Annuities/
 ├── index.html            ← Entry point / flow selector
 ├── v1/                   ← V1 funnel: keyboard slides up with the footer
 │   ├── goals-step/
+│   ├── dependents-step/
 │   ├── familiarity-step/
 │   ├── return-type-step/
 │   ├── income-age-step/
 │   ├── growth-period-step/
-│   ├── dependents-step/
+│   ├── investment-amount-step/
+│   ├── funding-source-step/
 │   ├── state-step/
 │   ├── zip-step/
 │   ├── birthdate-step/
-│   ├── name-step/
+│   ├── spouse-age-step/
 │   ├── email-step/
 │   ├── phone-step/
-│   └── otp-step/
+│   ├── otp-step/
+│   └── name-step/
 └── v2/                   ← V2 funnel: keyboard slides independently, CTA stays pinned
     ├── goals-step/
+    ├── dependents-step/
     ├── familiarity-step/
     ├── return-type-step/
     ├── income-age-step/
     ├── growth-period-step/
-    ├── dependents-step/
+    ├── investment-amount-step/
+    ├── funding-source-step/
     ├── state-step/
     ├── zip-step/
     ├── birthdate-step/
-    ├── name-step/
+    ├── spouse-age-step/
     ├── email-step/
     ├── phone-step/
-    └── otp-step/
+    ├── otp-step/
+    └── name-step/
 ```
 
 ---
@@ -67,10 +73,12 @@ Then open:
 Both versions follow the same linear flow:
 
 ```
-goals-step → familiarity-step → return-type-step → [income-age-step OR growth-period-step] → dependents-step → state-step → zip-step → birthdate-step → name-step → email-step → phone-step → otp-step
+goals-step → dependents-step → familiarity-step → return-type-step → [income-age-step OR growth-period-step] → investment-amount-step → funding-source-step → state-step → zip-step → birthdate-step → [spouse-age-step] → email-step → phone-step → otp-step → name-step
 ```
 
-Branch at return-type-step: goal=`retirement` → income-age-step; goal=`wealth` → growth-period-step; else → dependents-step.
+Branch at return-type-step: goal=`retirement` → income-age-step; goal=`wealth` → growth-period-step; else → investment-amount-step.
+
+Branch at birthdate-step: dependents includes `spouse` → spouse-age-step; else → email-step.
 
 ---
 
@@ -112,18 +120,21 @@ All utilities live on `window.EDS`:
 | Screen | Keyboard | Progress | Notes |
 |---|---|---|---|
 | goals-step | None (card selection) | 10% | 3 selectable goal cards, auto-advances on tap, saves `annuities_goal` to sessionStorage |
+| dependents-step | None (multi-select cards) | 35% | 4 options (spouse/children/parent/other), ≥1 required, saves `annuities_dependents` to sessionStorage |
 | familiarity-step | None (card selection) | 12% | 3 tap-to-advance cards, auto-advances to return-type-step |
 | return-type-step | None (card selection) | 15% | 3 icon cards (Fixed rate / Index-linked / Not sure), branches on `annuities_goal` |
 | income-age-step | None (dropdown) | 18% | `EDS.initDropdown`, ages 55–85; shown when goal=retirement |
 | growth-period-step | None (card selection) | 18% | 2×2 grid: 3/5/7/10 Years; shown when goal=wealth |
-| dependents-step | None (multi-select cards) | 35% | EDS Checkbox card item; 4 options, ≥1 required to advance |
+| investment-amount-step | Numeric (V1) / iOS (V2) | 22% | Currency input with 3 quick-fill pills ($100K/$500K/$1M), saves to sessionStorage |
+| funding-source-step | None (multi-select cards) | 25% | 5 options (employer/personal/bank/brokerage/other), ≥1 required, saves `annuities_funding_source` |
 | state-step | None (dropdown) | 2% | `EDS.initDropdown` for 50 US states |
 | zip-step | Numeric (V1) / iOS (V2) | 4% | 5-digit validation |
-| birthdate-step | iOS phone pad | 6% | `EDS.formatDate`, heading + subtext |
-| name-step | QWERTY | 5% | `top-group` + security row |
+| birthdate-step | iOS phone pad | 6% | `EDS.formatDate`, heading + subtext; branches to spouse-age-step if spouse in dependents |
+| spouse-age-step | iOS phone pad | 48% | Conditional screen; same format as birthdate-step; advances to email-step |
 | email-step | QWERTY | 10% | `top-group` + security row + legal text |
 | phone-step | iOS phone pad | 20% | `EDS.formatPhone`, 10-digit validation, legal text |
 | otp-step | iOS phone pad | 30% | 6-digit OTP boxes, 30s resend timer, phone number masked from `sessionStorage`, CTA: "Get my report" |
+| name-step | QWERTY | 5% | Final step; `top-group` + security row |
 
 ---
 

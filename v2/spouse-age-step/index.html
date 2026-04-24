@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Annuities – Check your phone</title>
+  <title>Annuities – Spouse date of birth</title>
   <link rel="stylesheet" href="../../components.css" />
-  <style>.progress__fill { width: 30%; }</style>
+  <style>.progress__fill { width: 48%; }</style>
 </head>
 <body>
   <div class="phone">
@@ -42,42 +42,24 @@
 
     <div class="content">
       <div class="question-and-input">
-
-        <div class="otp-header">
-          <div class="otp-icon-wrap">
-            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="44" height="44" rx="11" fill="#EBF4F3"/>
-              <rect x="13" y="9" width="18" height="26" rx="3.5" stroke="#056257" stroke-width="1.8" fill="none"/>
-              <circle cx="22" cy="31" r="1.5" fill="#056257"/>
-              <rect x="19" y="12" width="6" height="2" rx="1" fill="#056257"/>
-            </svg>
-          </div>
-          <div class="heading-group">
-            <p class="heading">Check your phone</p>
-            <p class="subtext" id="otpSubtext">Enter the code sent to (•••) •••-XXXX</p>
-          </div>
+        <div class="heading-group">
+          <p class="heading">What&rsquo;s your spouse&rsquo;s date of birth?</p>
+          <p class="subtext">We use this to help personalize your plan.</p>
         </div>
 
-        <div>
-          <div class="otp-row" id="otpRow" onmousedown="return false" onclick="document.getElementById('otpInput').focus()">
-            <div class="otp-box" id="otp0"></div>
-            <div class="otp-box" id="otp1"></div>
-            <div class="otp-box" id="otp2"></div>
-            <div class="otp-box" id="otp3"></div>
-            <div class="otp-box" id="otp4"></div>
-            <div class="otp-box" id="otp5"></div>
+        <div class="input-group">
+          <span class="input-label">Date of birth</span>
+          <div class="input-wrapper" id="inputWrapper">
+            <input id="spouseInput" type="text" inputmode="numeric" placeholder="mm/dd/yyyy" maxlength="10" autocomplete="bday" />
+            <div class="alert-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#a)"><path d="M8 5.33V8M8 10.67H8.007M14.667 8A6.667 6.667 0 1 1 1.333 8a6.667 6.667 0 0 1 13.334 0Z" stroke="#F44B40" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="a"><rect width="16" height="16" fill="white"/></clipPath></defs></svg>
+            </div>
           </div>
-          <p class="otp-hint" id="otpHint">Didn't get a code? Request a new code in <span id="otpTimer">30</span>s</p>
+          <span class="hint-text" id="hintText"></span>
         </div>
-
       </div>
-
       <div class="spacer"></div>
     </div>
-
-    <!-- hidden input for keyboard focus -->
-    <input id="otpInput" type="text" inputmode="numeric"
-      style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;top:0;left:0;" />
 
     </div></div>
 
@@ -85,7 +67,7 @@
 
     <div class="bottom-wrapper--v2" id="bottomWrapper">
       <div class="footer">
-        <button class="btn-next" id="btnNext" disabled>Get my report</button>
+        <button class="btn-next" id="btnNext">Next</button>
       </div>
     </div>
 
@@ -93,35 +75,9 @@
 
   <script src="../../components.js"></script>
   <script>
-    // ── Phone number display ──────────────────────────────────────
-    var phone = sessionStorage.getItem('annuities_phone') || '';
-    if (phone.length === 10) {
-      document.getElementById('otpSubtext').textContent =
-        'Enter the code sent to (\u2022\u2022\u2022) \u2022\u2022\u2022-' + phone.slice(-4);
-    }
-
-    // ── OTP state ─────────────────────────────────────────────────
-    var otpDigits = '';
-    var MAX = 6;
-    var boxes = [
-      document.getElementById('otp0'), document.getElementById('otp1'),
-      document.getElementById('otp2'), document.getElementById('otp3'),
-      document.getElementById('otp4'), document.getElementById('otp5')
-    ];
-    var btnNext = document.getElementById('btnNext');
-    var otpInput = document.getElementById('otpInput');
-
-    function renderOtp() {
-      boxes.forEach(function(box, i) {
-        box.textContent = otpDigits[i] || '';
-        box.classList.toggle('is-filled', i < otpDigits.length);
-        box.classList.toggle('is-active', i === otpDigits.length && otpDigits.length < MAX);
-      });
-      btnNext.disabled = otpDigits.length < MAX;
-    }
-    renderOtp();
-
-    // ── Keyboard ──────────────────────────────────────────────────
+    var spouseInput     = document.getElementById('spouseInput');
+    var inputWrapper    = document.getElementById('inputWrapper');
+    var hintText        = document.getElementById('hintText');
     var keyboardWrapper = document.getElementById('keyboardWrapper');
     var bottomWrapper   = document.getElementById('bottomWrapper');
 
@@ -129,46 +85,53 @@
     EDS.buildIosKeyboard(keyboard);
     keyboardWrapper.appendChild(keyboard);
 
-    EDS.initV2Keyboard(otpInput, keyboardWrapper, bottomWrapper, function(key) {
-      if (key === 'delete') {
-        otpDigits = otpDigits.slice(0, -1);
-      } else if (key !== 'noop' && /^\d$/.test(key) && otpDigits.length < MAX) {
-        otpDigits += key;
+    function getDigits(v) { return v.replace(/\D/g,''); }
+    function clearError() {
+      if (getDigits(spouseInput.value).length > 0) {
+        inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
       }
-      renderOtp();
+    }
+
+    spouseInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        spouseInput.value = EDS.formatDate(getDigits(spouseInput.value).slice(0,-1));
+        clearError();
+      }
+    });
+    spouseInput.addEventListener('input', function () {
+      spouseInput.value = EDS.formatDate(getDigits(spouseInput.value).slice(0,8));
+      clearError();
     });
 
-    // ── Resend timer ──────────────────────────────────────────────
-    var timerCount = 30;
-    var timerEl    = document.getElementById('otpTimer');
-    var otpHint    = document.getElementById('otpHint');
-    var timerInterval;
-
-    function startTimer() {
-      timerCount = 30;
-      otpHint.innerHTML = 'Didn\u2019t get a code? Request a new code in <span id="otpTimer">' + timerCount + '</span>s';
-      timerEl = document.getElementById('otpTimer');
-      timerInterval = setInterval(function() {
-        timerCount--;
-        if (timerCount > 0) {
-          timerEl.textContent = timerCount;
-        } else {
-          clearInterval(timerInterval);
-          otpHint.innerHTML = 'Didn\u2019t get a code? <a href="#" id="resendLink">Request a new code</a>';
-          document.getElementById('resendLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            startTimer();
-          });
-        }
-      }, 1000);
-    }
-    startTimer();
-
-    // ── CTA ───────────────────────────────────────────────────────
-    btnNext.addEventListener('click', function() {
-      if (otpDigits.length === MAX) {
-        EDS.navigate('../name-step/');
+    EDS.initV2Keyboard(spouseInput, keyboardWrapper, bottomWrapper, function (key) {
+      var digits = getDigits(spouseInput.value);
+      if (key === 'delete') {
+        spouseInput.value = EDS.formatDate(digits.slice(0,-1));
+      } else if (key !== 'noop' && digits.length < 8) {
+        spouseInput.value = EDS.formatDate(digits + key);
       }
+      clearError();
+    });
+
+    function isValidDate(digits) {
+      if (digits.length !== 8) return false;
+      var mm = parseInt(digits.slice(0,2)), dd = parseInt(digits.slice(2,4)), yyyy = parseInt(digits.slice(4,8));
+      return mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31 && yyyy >= 1900 && yyyy <= new Date().getFullYear();
+    }
+
+    document.getElementById('btnNext').addEventListener('click', function () {
+      var digits = getDigits(spouseInput.value);
+      if (!digits) {
+        hintText.textContent = 'Enter your spouse\u2019s date of birth to continue.';
+        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
+      }
+      if (!isValidDate(digits)) {
+        hintText.textContent = 'Please enter a valid date in mm/dd/yyyy format.';
+        inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
+      }
+      inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
+      EDS.navigate('../email-step/');
     });
   </script>
 </body>

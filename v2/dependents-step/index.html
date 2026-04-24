@@ -171,7 +171,12 @@
     });
 
     btnNext.addEventListener('click', function() {
-      EDS.navigate('../state-step/');
+      var selected = [];
+      document.querySelectorAll('.dep-card.is-selected').forEach(function(card) {
+        selected.push(card.dataset.value);
+      });
+      sessionStorage.setItem('annuities_dependents', JSON.stringify(selected));
+      EDS.navigate('../familiarity-step/');
     });
   </script>
 </body>

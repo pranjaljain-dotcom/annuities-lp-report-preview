@@ -130,7 +130,12 @@
         inputWrapper.classList.add('is-destructive'); hintText.classList.add('visible'); return;
       }
       inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
-      EDS.navigate('../name-step/');
+      var dependents = JSON.parse(sessionStorage.getItem('annuities_dependents') || '[]');
+      if (dependents.indexOf('spouse') !== -1) {
+        EDS.navigate('../spouse-age-step/');
+      } else {
+        EDS.navigate('../email-step/');
+      }
     });
   </script>
 </body>
