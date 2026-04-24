@@ -11,7 +11,9 @@ window.EDS = (function () {
   /* ── Navigation ─────────────────────────────────────────── */
   function navigate(url) {
     document.getElementById('slideInner').classList.add('is-leaving');
-    setTimeout(function () { window.location.href = url; }, 300);
+    // Append index.html to ensure GitHub Pages serves the file directly
+    var dest = url.replace(/\/?$/, '/index.html');
+    setTimeout(function () { window.location.href = dest; }, 300);
   }
 
   /* ── Mobile footer pinning (visualViewport) ─────────────── */
