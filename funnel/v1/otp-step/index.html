@@ -134,6 +134,14 @@
       renderOtp();
     });
 
+    // Mobile: native keyboard input feeds OTP boxes
+    otpInput.addEventListener('input', function() {
+      var raw = otpInput.value.replace(/\D/g, '');
+      otpDigits = raw.slice(0, MAX);
+      otpInput.value = '';
+      renderOtp();
+    });
+
     EDS.autoFocus(otpInput);
 
     // ── Resend timer ──────────────────────────────────────────────
