@@ -100,7 +100,7 @@
     keyboardWrapper.appendChild(keyboard);
 
     phoneInput.addEventListener('input', function () {
-      var raw = phoneInput.value.replace(/\D/g, '');
+      var raw = phoneInput.value.replace(/\D/g, '').slice(0, 10);
       phoneInput.value = EDS.formatPhone(raw);
       if (raw.length > 0) {
         inputWrapper.classList.remove('is-destructive'); hintText.classList.remove('visible');
