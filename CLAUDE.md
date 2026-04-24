@@ -99,7 +99,7 @@ Annuities/
 ```
 
 ### Navigation flow (both versions)
-`goals-step` → `familiarity-step` → `return-type-step` → `[income-age-step OR growth-period-step]` → `dependents-step` → `state-step` → `zip-step` → `birthdate-step` → `name-step` → `email-step` → `phone-step` → `otp-step`
+`goals-step` → `dependents-step` → `familiarity-step` → `return-type-step` → `[income-age-step OR growth-period-step]` → `investment-amount-step` → `funding-source-step` → `state-step` → `zip-step` → `birthdate-step` → `[spouse-age-step if spouse in dependents]` → `email-step` → `phone-step` → `otp-step` → `name-step`
 
 All navigation uses `EDS.navigate('../next-step/')` (relative, same-version folder).
 
@@ -127,6 +127,9 @@ The only inline `<style>` allowed per screen is the progress fill width:
 | name-step | 5% |
 | email-step | 10% |
 | phone-step | 20% |
+| investment-amount-step | 22% |
+| funding-source-step | 25% |
+| spouse-age-step | 48% |
 
 ---
 
@@ -222,8 +225,13 @@ EDS.initMobileFooter(bottomWrapper)  // activates visualViewport sticky footer o
 ### goals-step (card selection — no keyboard)
 - 3 tap-to-advance cards: Guaranteed retirement income (`retirement`), Build wealth tax deferred (`wealth`), I'm not sure yet (`unsure`)
 - Saves selection to `sessionStorage.setItem('annuities_goal', value)` on tap
-- Auto-advances to `../familiarity-step/` after 300ms
+- Auto-advances to `../dependents-step/` after 300ms
 - No footer/CTA
+
+### dependents-step (multi-select cards — no keyboard)
+- 4 cards (multi-select, ≥1 required): Spouse (`spouse`), Children (`children`), Parent/Grandparent (`parent`), None of the above (`none`)
+- Saves JSON array to `sessionStorage.setItem('annuities_dependents', JSON.stringify(selected))` on Next tap
+- Navigates to `../familiarity-step/`
 
 ### familiarity-step (card selection — no keyboard)
 - 3 tap-to-advance cards: "I'm just starting to learn", "I know the basics", "I'm very familiar"
@@ -232,7 +240,8 @@ EDS.initMobileFooter(bottomWrapper)  // activates visualViewport sticky footer o
 
 ### return-type-step (card selection — no keyboard)
 - 3 icon cards (icon left 40×40 + text right): Fixed rate (Shield Check icon), Index-linked (Financial Growth icon), Not sure (Lightbulb icon)
-- Conditional navigation: reads `sessionStorage.getItem('annuities_goal')` → `retirement` → `../income-age-step/`; `wealth` → `../growth-period-step/`; else → `../dependents-step/`
+- All icons are 2C-D duo-tone variant (40×40, viewBox="0 0 60 60")
+- Conditional navigation: reads `sessionStorage.getItem('annuities_goal')` → `retirement` → `../income-age-step/`; `wealth` → `../growth-period-step/`; else → `../investment-amount-step/`
 - Auto-advances after 300ms
 - No footer/CTA
 
@@ -240,13 +249,37 @@ EDS.initMobileFooter(bottomWrapper)  // activates visualViewport sticky footer o
 - Shown when goal=`retirement`
 - Input: `EDS.initDropdown`, label "Age", placeholder "Select an age", options 55–85 years old
 - V1: uses `bottom-wrapper`; V2: uses `bottom-wrapper--v2`
-- Navigates to `../dependents-step/`
+- Navigates to `../investment-amount-step/`
 
 ### growth-period-step (card selection — no keyboard)
 - Shown when goal=`wealth`
 - 2×2 grid of 4 cards: 3 Years, 5 Years, 7 Years, 10 Years
-- Auto-advances to `../dependents-step/` after 300ms
+- Auto-advances to `../investment-amount-step/` after 300ms
 - No footer/CTA
+
+### investment-amount-step (numeric keyboard)
+- Progress: 22%
+- Heading: "How much do you want to put into an annuity?"
+- Currency input (display-only, filled by keyboard): prefixed with `$`, formatted via `parseInt(digits).toLocaleString('en-US')`
+- 3 quick-fill pills below input: `$100,000` (`data-value="100000"`), `$500,000` (`data-value="500000"`), `$1,000,000` (`data-value="1000000"`)
+- Pill tap: sets digits + updates display + adds `.is-selected` to tapped pill, removes from others
+- Saves to `sessionStorage.setItem('annuities_investment_amount', digits)`
+- V1: `EDS.buildNumericKeyboard` + `EDS.initV1Keyboard` + `EDS.autoFocus(amountInput)`
+- V2: `EDS.buildIosKeyboard` + `EDS.initV2Keyboard`
+- Navigates to `../funding-source-step/`
+
+### funding-source-step (multi-select cards — no keyboard)
+- Progress: 25%
+- Heading: "How do you plan to fund this annuity?" + subtext "Select all that apply."
+- 5 multi-select cards using `.dep-card` CSS pattern:
+  1. Employer retirement plan (`employer`) — Briefcase icon
+  2. Personal retirement account (`personal`) — Stacked Dollars icon
+  3. Bank Account (`bank`) — Bank icon
+  4. Brokerage/Investment account (`brokerage`) — Bar Graph icon
+  5. Other funds (`other`) — Wallet icon
+- All icons are 2C-D duo-tone SVGs, 40×40, viewBox="0 0 60 60"
+- Saves `sessionStorage.setItem('annuities_funding_source', JSON.stringify(selected))`
+- Navigates to `../state-step/`
 
 ### state-step (dropdown — no keyboard)
 - Input: custom EDS dropdown (`EDS.initDropdown`)
@@ -266,6 +299,15 @@ EDS.initMobileFooter(bottomWrapper)  // activates visualViewport sticky footer o
 - Uses `EDS.formatDate(digits)` to auto-format as user types
 - Has `heading-group` wrapper (heading + subtext, gap: 8px)
 - V1: `EDS.autoFocus(bdInput)` (no delay); V2: handled by initV2Keyboard
+- Conditional navigation: reads `sessionStorage.getItem('annuities_dependents')` → if `'spouse'` in array → `../spouse-age-step/`; else → `../email-step/`
+
+### spouse-age-step (iOS keyboard — conditional screen)
+- Only shown when `'spouse'` is in `annuities_dependents` sessionStorage array
+- Progress: 48%
+- Heading: "What's your spouse's date of birth?" + subtext "We use this to help personalize your plan."
+- Identical structure to birthdate-step (same input type, format, keyboard)
+- Variable named `spouseInput`
+- Navigates to `../email-step/`
 
 ### name-step
 - Input: `type="text"` `autocomplete="name"` `autocapitalize="words"`
