@@ -139,6 +139,14 @@
     });
 
     // Mobile: native keyboard input feeds OTP boxes
+    otpInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace') {
+        otpDigits = otpDigits.slice(0, -1);
+        otpInput.value = '';
+        renderOtp();
+        e.preventDefault();
+      }
+    });
     otpInput.addEventListener('input', function() {
       var raw = otpInput.value.replace(/\D/g, '');
       otpDigits = (otpDigits + raw).slice(0, MAX);
