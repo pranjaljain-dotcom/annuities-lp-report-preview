@@ -1,7 +1,11 @@
 # Annuities Project — Claude Context
 
 ## Project
-Mobile annuities funnel (375×812). Static HTML prototype at `index.html`, Figma implementation at `https://www.figma.com/design/TDTRU2WqDgW1cgaBJnwmiR/Untitled`.
+Monorepo for Ethos annuities prototypes. Two sub-projects:
+- **`lp-preview/`** — Landing page with interactive phone shell (`lp-preview/index.html`, self-contained)
+- **`funnel/`** — Mobile onboarding funnel (375×812), Figma implementation at `https://www.figma.com/design/TDTRU2WqDgW1cgaBJnwmiR/Untitled`
+
+**Design system reference:** See [`EDS.md`](./EDS.md) for all component keys, color tokens, typography styles, and usage rules. Do not duplicate DS info here — always read EDS.md first.
 
 **Design system reference:** See [`EDS.md`](./EDS.md) for all component keys, color tokens, typography styles, and usage rules. Do not duplicate DS info here — always read EDS.md first.
 
@@ -61,31 +65,38 @@ footer.fills = [whiteColorFill];  // bound to Colors/White token
 
 ## HTML Prototype — Screen Architecture
 
-All screens live under `v1/` or `v2/`. Each version is a complete, self-contained funnel. Shared code lives at the root:
+All funnel screens live under `funnel/v1/` or `funnel/v2/`. Each version is a complete, self-contained funnel. Shared code lives at `funnel/`:
 
 ```
 Annuities/
-├── components.css        ← all shared CSS (fonts, layout, inputs, keyboards, footer)
-├── components.js         ← all shared JS (window.EDS namespace)
-├── fonts/
-├── v1/                   ← V1 funnel (keyboard slides with footer as one unit)
-│   ├── state-step/
-│   ├── zip-step/
-│   ├── birthdate-step/
-│   ├── name-step/
-│   ├── email-step/
-│   └── phone-step/
-└── v2/                   ← V2 funnel (keyboard slides independently, CTA never moves)
-    ├── state-step/
-    ├── zip-step/
-    ├── birthdate-step/
-    ├── name-step/
-    ├── email-step/
-    └── phone-step/
+├── lp-preview/
+│   └── index.html        ← LP landing page (self-contained)
+└── funnel/
+    ├── components.css    ← all shared CSS (fonts, layout, inputs, keyboards, footer)
+    ├── components.js     ← all shared JS (window.EDS namespace)
+    ├── fonts/
+    ├── v1/               ← V1 funnel (keyboard slides with footer as one unit)
+    │   ├── goals-step/
+    │   ├── state-step/
+    │   ├── zip-step/
+    │   ├── birthdate-step/
+    │   ├── name-step/
+    │   ├── email-step/
+    │   ├── phone-step/
+    │   └── otp-step/
+    └── v2/               ← V2 funnel (keyboard slides independently, CTA never moves)
+        ├── goals-step/
+        ├── state-step/
+        ├── zip-step/
+        ├── birthdate-step/
+        ├── name-step/
+        ├── email-step/
+        ├── phone-step/
+        └── otp-step/
 ```
 
 ### Navigation flow (both versions)
-`state-step` → `zip-step` → `birthdate-step` → `name-step` → `email-step` → `phone-step`
+`goals-step` → `state-step` → `zip-step` → `birthdate-step` → `name-step` → `email-step` → `phone-step` → `otp-step`
 
 All navigation uses `EDS.navigate('../next-step/')` (relative, same-version folder).
 
@@ -93,7 +104,7 @@ All navigation uses `EDS.navigate('../next-step/')` (relative, same-version fold
 
 ## HTML Prototype — Shared Files
 
-Every screen imports both shared files with `../../` prefix (two levels up from `v1/screen/` or `v2/screen/`):
+Every screen imports both shared files with `../../` prefix (two levels up from `funnel/v1/screen/` or `funnel/v2/screen/`):
 ```html
 <link rel="stylesheet" href="../../components.css" />
 <script src="../../components.js"></script>
